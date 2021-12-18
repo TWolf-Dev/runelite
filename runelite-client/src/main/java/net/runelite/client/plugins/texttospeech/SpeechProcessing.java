@@ -3,12 +3,16 @@ package net.runelite.client.plugins.texttospeech;
 import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;
 
+import javax.inject.Inject;
+
 public class SpeechProcessing {
     private int rate = 30;
     private int pitch = 30;
     private float volume = 0.8f;
     private String senderName = "";
 
+    @Inject
+    private TextToSpeechConfig config;
 
     public void setString(String senderName){
         this.senderName = senderName;
@@ -41,7 +45,6 @@ public class SpeechProcessing {
         System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
         Voice voice;
         voice = VoiceManager.getInstance().getVoice("kevin16");
-
         //Create seperate thread for TTS
         new Thread(() -> {
             if(voice != null){
@@ -58,5 +61,6 @@ public class SpeechProcessing {
         }).start();
 
     }
+
 
 }

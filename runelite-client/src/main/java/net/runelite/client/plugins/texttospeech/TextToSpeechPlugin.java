@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.texttospeech;
 
-
+import java.util.HashMap;
 import com.google.inject.Provides;
 import javax.inject.Inject;
 import net.runelite.api.Client;
@@ -9,6 +9,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
@@ -31,7 +32,7 @@ public class TextToSpeechPlugin extends Plugin {
     private ChatMessageManager chatMessageManager;
 
     @Inject
-    private SpeechProcessing processor;
+    private SpeechProcessing speechProcessor;
 
     @Provides
     TextToSpeechConfig getConfig(ConfigManager configManager)
@@ -43,8 +44,10 @@ public class TextToSpeechPlugin extends Plugin {
     public void onChatMessage(ChatMessage chatMessage)
     {
         MessageNode messageNode = chatMessage.getMessageNode();
-        processor = new SpeechProcessing();
-        boolean update = false;
+        String finalMessage;
+        speechProcessor = new SpeechProcessing();
+
+        finalMessage = chatMessage.getMessage();
 
         //TODO Filter out own messages && Announce Player Names
         switch (chatMessage.getType())
@@ -54,20 +57,14 @@ public class TextToSpeechPlugin extends Plugin {
             case MODCHAT:
                 return;
             case PRIVATECHAT:
-                if(!config.privateChat()){
-                    break;
-                }else if(config.readOnlyFriends()){
-                    //Throw some logic to only read chats from Friends
-                }else{
-                    processor.processSpeech(chatMessage.getMessage());
-                }
+
             case PUBLICCHAT:
                 if(!config.publicChatOption()) {
                     break;
-                }else if(config.readOnlyFriends()){
+                }else if(config.publicFriendsOnly()){
                     //Throw some logic to only read chats from Friends
                 }else{
-                    processor.processSpeech(chatMessage.getMessage());
+                    speechProcessor.processSpeech(finalMessage);
                 }
             case FRIENDSCHAT:
             case CLAN_CHAT:
@@ -80,29 +77,27 @@ public class TextToSpeechPlugin extends Plugin {
 
         switch (config.voicePitchConfig()){
             case LOW:
-                processor.setPitch(30);
+                speechProcessor.setPitch(30);
                 break;
             case MEDIUM:
-                processor.setPitch(55);
+                speechProcessor.setPitch(55);
                 break;
             case HIGH:
-                processor.setPitch(90);
+                speechProcessor.setPitch(90);
                 break;
         }
 
         switch(config.voiceRateConfig()){
             case SLOW:
-                processor.setRate(75);
+                speechProcessor.setRate(75);
                 break;
             case NORMAL:
-                processor.setRate(190);
+                speechProcessor.setRate(190);
                 break;
             case FAST:
-                processor.setRate(300);
+                speechProcessor.setRate(300);
                 break;
         }
 
     }
-
-
 }

@@ -20,8 +20,17 @@ public interface TextToSpeechConfig extends Config {
         HIGH
     }
 
+    /** General Config Options **/
     @ConfigItem(
             position = 0,
+            keyName = "voiceVolume",
+            name = "Voice Volume",
+            description = "Adjust speaking voice volume."
+    )
+    default int voiceVolumeConfig() { return 1; }
+
+    @ConfigItem(
+            position = 1,
             keyName = "voiceSpeed",
             name = "Voice Speed",
             description = "Adjust the speed at which the plugin reads dialogue text."
@@ -31,7 +40,7 @@ public interface TextToSpeechConfig extends Config {
     }
 
     @ConfigItem(
-            position = 1,
+            position = 2,
             keyName = "voicePitch",
             name = "Voice Pitch",
             description = "Adjust the pitch of reading voice"
@@ -40,30 +49,20 @@ public interface TextToSpeechConfig extends Config {
         return VoicePitchEnum.MEDIUM;
     }
 
-    //TODO Add Volume Controls
-    /*
-    @ConfigItem(
-            position = 2,
-            keyName = "voiceVolume",
-            name = "Volume (1-10)",
-            description = "Adjust speech volume."
-    )
-    default int voiceVolume() { return 5; }*/
-
     @ConfigItem(
             position = 3,
-            keyName = "dialogueText",
-            name = "Read NPC/Quest Dialogues",
-            description = "Enable/Disable Dialogue TTS"
+            keyName = "publicChatOption",
+            name = "Read Public Chat",
+            description = "Enable/Disable Public Chat TTS"
     )
-    default boolean dialogueText() {
+    default boolean publicChatOption() {
         return true;
     }
 
     @ConfigItem(
             position = 4,
             keyName = "privateChat",
-            name = "Read Private Chat Messages",
+            name = "Read Private Messages",
             description = "Enable/Disable Private Chat TTS"
     )
     default boolean privateChat() {
@@ -72,32 +71,115 @@ public interface TextToSpeechConfig extends Config {
 
     @ConfigItem(
             position = 5,
+            keyName = "dialogueText",
+            name = "Read Dialog w/ NPCs",
+            description = "Enable/Disable Dialogue TTS"
+    )
+    default boolean dialogueText() {
+        return true;
+    }
+
+    /** Secondary Public Chat Options **/
+    @ConfigSection(
+            position = 6,
+            name = "Public Chat",
+            description = "Settings for Public Chat",
+            closedByDefault = true
+    )
+    String publicSection = "Public Chat";
+
+    @ConfigItem(
+            position = 8,
+            keyName = "announceSender",
+            name = "Announce Sender",
+            description = "Prefixes the sender's name to the message.",
+            section = publicSection
+    )
+    default boolean publicAnnounceSender() { return false; }
+
+    @ConfigItem(
+            position = 9,
             keyName = "readOnlyFriends",
             name = "Read Friend Messages Only",
-            description = "Enable/Disable Only Reading Friend Messages TTS"
+            description = "Enable/Disable Only Reading Friend Messages TTS",
+            section = publicSection
     )
-    default boolean readOnlyFriends() {
+    default boolean publicFriendsOnly() {
         return false;
     }
 
+
+    /** Secondary Private Chat Options **/
     @ConfigSection(
-            position = 6,
+            position = 10,
+            name = "Private Messages",
+            description = "Settings for private messages",
+            closedByDefault = true
+    )
+    String privateSection = "Private Messages";
+
+    @ConfigItem(
+            position = 11,
+            keyName = "notifyMessage",
+            name = "Notification ONLY",
+            description = "Disable other options and only announce msg type and sender.",
+            section = privateSection
+    )
+    default boolean privateNotificationOnly() { return false; }
+
+    @ConfigItem(
+            position = 12,
+            keyName = "announceSender",
+            name = "Announce Sender",
+            description = "Prefixes the sender's name to the message.",
+            section = privateSection
+    )
+    default boolean privateAnnounceSender() { return false; }
+
+    @ConfigItem(
+            position = 13,
+            keyName = "readOnlyFriends",
+            name = "Read Friend Messages Only",
+            description = "Enable/Disable Only Reading Friend Messages TTS",
+            section = privateSection
+    )
+    default boolean privateFriendsOnly() {
+        return false;
+    }
+
+    /** Secondary NPC Dialogue Options **/
+    @ConfigSection(
+            position = 14,
             name = "NPC/Quest Dialogue",
             description = "Settings for NPC/Quest Dialogue",
             closedByDefault = true
     )
     String npcSection = "NPC/Quest Dialogue";
 
-    @ConfigSection(
-            position = 7,
-            name = "Private Messages",
-            description = "Settings for private messages",
-            closedByDefault = true
+    @ConfigItem(
+            position = 15,
+            keyName = "playerChoices",
+            name = "Read Choice Options",
+            description = "Enable/Disable Speech for player choices",
+            section = npcSection
     )
-    String pmSection = "Private Messages";
+    default boolean playerChoices() {
+        return false;
+    }
 
+    @ConfigItem(
+            position = 16,
+            keyName = "readDialogNames",
+            name = "Read Narrator Name",
+            description = "Reads the name of the narrator.",
+            section = npcSection
+    )
+    default boolean readNarratorName() { return false; }
+
+
+    /** Future Options **/
     @ConfigSection(
-            position = 8,
+            position = 20,
             name = "Clan Chat",
             description = "Settings for Clan Chat",
             closedByDefault = true
@@ -105,53 +187,12 @@ public interface TextToSpeechConfig extends Config {
     String ccSection = "Clan Chat";
 
     @ConfigSection(
-            position = 9,
-            name = "Public Chat",
-            description = "Settings for Public Chat",
-            closedByDefault = true
-    )
-    String publicSection = "Public Chat";
-
-    @ConfigSection(
-            position = 10,
+            position = 21,
             name = "Game Chat",
             description = "Settings for game chat (i.e. game notifications)",
             closedByDefault = true
     )
     String gcSection = "Game Chat";
 
-
-    // NPC/Quest Dialogue Section Options
-    @ConfigItem(
-            keyName = "playerChoices",
-            name = "Read Choice Options",
-            description = "Enable/Disable Speech for player choices",
-            section = npcSection
-    )
-    default boolean playerChoices() {
-        return true;
-    }
-
-    //Private Chat Options
-    @ConfigItem(
-            keyName = "announcePlayerName",
-            name = "Announce Sender's Name",
-            description = "Enable/Disable Announcing Sender Names",
-            section = pmSection
-    )
-    default boolean announcePlayerName() {
-        return true;
-    }
-
-    //Public Chat Options
-    @ConfigItem(
-            keyName = "publicChatOption",
-            name = "Read Public Chat",
-            description = "Enable/Disable Public Chat TTS",
-            section = publicSection
-    )
-    default boolean publicChatOption() {
-        return true;
-    }
 }
 
